@@ -1,90 +1,98 @@
+//Connect DOM elemensts function
 import { mapDomElements } from "./DOMAction.js";
-import { getWeatherCity } from "./ApiService.js";
 
-const initialize = () => {
-    connectDOMElement();
-    setupListeners();
-}
+//Get weather by city function from api service
+import { getWeatherByCity } from "./ApiService.js";
 
-let viewElems = {};
+class WeatherApp{
+    constructor(){
+        this.viewElems = {};
+        this.initialize();
+    }
 
-const connectDOMElement = () => {
-    const listOfId = Array.from(document.querySelectorAll('[id]')).map(elem => elem.id);
-    viewElems = mapDomElements(listOfId);
-}
+    initialize = () => {
+        this.connectDOMElement();
+        this.setupListeners();
+    }
 
-const setupListeners = () => {
-    viewElems.weatherSearchView.addEventListener("keydown", handleSubmit);
-    viewElems.searchButton.addEventListener("click", handleSubmit);
-    viewElems.returnToSearchBtn.addEventListener("click", returnToSearch);
-}
+    connectDOMElement = () => {
+        const listOfId = Array.from(document.querySelectorAll('[id]')).map(elem => elem.id);
+        this.viewElems = mapDomElements(listOfId);
+    }
 
-const handleSubmit = () => {
-    if(event.key === "Enter" || event.type === "click"){
-        fadeInOut();
-        let city = viewElems.searchInput.value;
-        getWeatherCity(city)
-        .then(data => {
-            showWeather(data);
-            displayChange(data);
-            fadeInOut();
-            viewElems.searchInput.style.borderColor = "black";
-        })
-        .catch(() => {
-            console.log("error")
-            fadeInOut()
-            viewElems.searchInput.style.borderColor = "red";
-            viewElems.searchInput.value = "City name error";
-        })
+    setupListeners = () => {
+        this.viewElems.weatherSearchView.addEventListener("keydown", this.handleSubmit);
+        this.viewElems.searchButton.addEventListener("click", this.handleSubmit);
+        this.viewElems.returnToSearchBtn.addEventListener("click", this.returnToSearch);
+    }
+
+//Input submit function
+    handleSubmit = () => {
+        if(event.key === "Enter" || event.type === "click"){
+            this.fadeInOut();
+            let city = this.viewElems.searchInput.value;
+            getWeatherByCity(city)
+            .then(data => {
+                this.showWeather(data);
+                this.displayChange(data);
+                this.fadeInOut();
+                this.viewElems.searchInput.style.borderColor = "black";
+            })
+            .catch(() => {
+                this.fadeInOut()
+                this.viewElems.searchInput.style.borderColor = "red";
+                this.viewElems.searchInput.value = "City name error";
+            })
+        }
+    }
+
+//Weather parameters display
+    showWeather = (data) => {
+        const weather = data.consolidated_weather[0]
+
+        this.viewElems.weatherCity.innerText = data.title;
+        this.viewElems.weatherIcon.src = `https://www.metaweather.com/static/img/weather/${data.consolidated_weather[0].weather_state_abbr}.svg`;
+
+        const currentTemp = weather.the_temp.toFixed(0);
+        const minTemp = weather.min_temp.toFixed(0);
+        const maxTemp = weather.max_temp.toFixed(0);
+
+        this.viewElems.weatherCurrentTemp.innerText = `Current temperature: ${currentTemp}  °C`;
+        this.viewElems.weatherMaxTemp.innerText = `Maximum temperature: ${maxTemp}  °C`;
+        this.viewElems.weatherMinTemp.innerText = `Minimum temperature: ${minTemp}  °C`;
 
     }
 
-}
-
-const showWeather = (data) => {
-    const weather = data.consolidated_weather[0]
-
-    viewElems.weatherCity.innerText = data.title;
-    viewElems.weatherIcon.src = `https://www.metaweather.com/static/img/weather/${data.consolidated_weather[0].weather_state_abbr}.svg`;
-
-    const currentTemp = weather.the_temp.toFixed(0);
-    const minTemp = weather.min_temp.toFixed(0);
-    const maxTemp = weather.max_temp.toFixed(0);
-
-    viewElems.weatherCurrentTemp.innerText = `Current temperature: ${currentTemp}  °C`;
-    viewElems.weatherMaxTemp.innerText = `Maximum temperature: ${maxTemp}  °C`;
-    viewElems.weatherMinTemp.innerText = `Minimum temperature: ${minTemp}  °C`;
-
-}
-
-const displayChange = () => {
-    if(viewElems.weatherSearchView.style.display !== "none"){
-        viewElems.weatherSearchView.style.display = "none";
-        viewElems.weatherForecastView.style.display = "block"
+//View change function
+    displayChange = () => {
+        if(this.viewElems.weatherSearchView.style.display !== "none"){
+            this.viewElems.weatherSearchView.style.display = "none";
+            this.viewElems.weatherForecastView.style.display = "block"
+        }
+        else{
+            this.viewElems.weatherSearchView.style.display = "flex";
+            this.viewElems.weatherForecastView.style.display = "none";
+            this.viewElems.searchInput.value = "";
+        }
     }
-    else{
-        viewElems.weatherSearchView.style.display = "flex";
-        viewElems.weatherForecastView.style.display = "none";
-        viewElems.searchInput.value = "";
-    }
-}
 
-const fadeInOut = () => {
-    if(viewElems.mainContainer.style.opacity === "1" || viewElems.mainContainer.style.opacity === ""){
-        viewElems.mainContainer.style.opacity = "0";
+//Display fade in/out function
+    fadeInOut = () => {
+        if(this.viewElems.mainContainer.style.opacity === "1" || this.viewElems.mainContainer.style.opacity === ""){
+            this.viewElems.mainContainer.style.opacity = "0";
+        }
+        else{
+            this.viewElems.mainContainer.style.opacity = "1";
+        }
     }
-    else{
-        viewElems.mainContainer.style.opacity = "1";
+
+    returnToSearch = () => {
+        this.fadeInOut();
+        setTimeout(() => {
+            this.displayChange();
+            this.fadeInOut();
+        }, 500);
     }
 }
 
-const returnToSearch = () => {
-    fadeInOut();
-    setTimeout(() => {
-        displayChange();
-        fadeInOut();
-    }, 500);
-    
-}
-
-document.addEventListener("DOMContentLoaded", initialize);
+document.addEventListener("DOMContentLoaded", new WeatherApp());
