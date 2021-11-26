@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <title>Weather Application</title>
+</head>
+<body>
+    <main>
+        <section class="weather-info" id="mainContainer">
+
+            <div class="weather-info__search-view" id="weatherSearchView">
+                <h1>Check the weather</h1>
+                <label for="searchInput">Weather in city:</label>
+                <input type="text" id="searchInput">
+                <button id="searchButton">Search</button>
+            </div>
+
+            <div class="weather-info__forecast-view" id="weatherForecastView">
+                <button class="weather-info__btn-return" id="returnToSearchBtn">Return</button>
+
+                <div class="weather-into__city">
+                    <h1 id="weatherCity"></h1>
+                    <img src="" alt="" id="weatherIcon">
+                </div>
+
+                <div class="weather-into__temperatures">
+                    <h2 id="weatherCurrentTemp"></h2>
+                    <p id="weatherMaxTemp"></p>
+                    <p id="weatherMinTemp"></p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
